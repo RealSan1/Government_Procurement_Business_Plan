@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자료실 - 상세보기 - 대학일자리플러스센터</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background: #fff;
+      color: #333;
+      padding-top: 60px;
+    }
+    header {
+      background: #003087;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1001;
+    }
+            nav { display: flex; justify-content: space-between; align-items: center; }
+        nav div {font-size: 25px; color: #FFFFFF; text-decoration-line: none;}
+        nav ul { list-style: none; display: flex; gap: 30px; margin-right: 55px;}
+        nav ul li a { color: #FFFFFF; text-decoration: none; }
+
+    /* 콘텐츠 */
+    .content {
+      max-width: 900px;
+      margin: 0 auto 3rem;
+      padding: 1.5rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .post-date {
+      font-size: 0.9rem;
+      color: #fff;
+      background: #003087;
+      padding: 5px 10px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    .post-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 1rem 0;
+      color: #003087;
+    }
+    .post-meta {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.5rem;
+    }
+    .post-content {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #333;
+    }
+    .back-button {
+      margin-top: 1.5rem;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #003087;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .back-button:hover {
+      background: #0055D4;
+    }
+
+    /* footer */
+    footer {
+      background: #003087;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      position: sticky;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+            <div>대학일자리플러스센터</div>
+            <ul>
+                <li><a href="#jobs">채용정보</a></li>
+                <li><a href="#consult">상담신청</a></li>
+                <li><a href="#events">교육행사</a></li>
+                <li><a href="#resources">자료실</a></li>
+                <li><a href="#login">로그인</a></li>
+            </ul>
+        </nav>
+  </header>
+
+  <div class="content">
+    <div class="post-date">2025-09-16 03:48 AM KST</div>
+    <div class="post-title">공지사항 - 2025년 9월 업데이트</div>
+    <div class="post-meta">등록일: 2025-09-16 | 조회수: 45</div>
+    <div class="post-content">
+      <p>안녕하세요, 대학일자리플러스센터입니다. 2025년 9월 16일 기준으로 새로운 공지사항을 업데이트하였습니다. 이번 공지사항에서는 주요 일정 변경 사항과 새로운 자료실 자료에 대한 안내가 포함되어 있습니다.</p>
+      <ul>
+        <li>취업 가이드 자료 추가</li>
+        <li>진로 상담 예약 방법 변경</li>
+        <li>행사 일정 조정 (9월 20일 ~ 9월 25일)</li>
+      </ul>
+      <p>추가 문의는 연락처(123-456-7890)로 연락 주시기 바랍니다.</p>
+    </div>
+    <button class="back-button" onclick="window.location.href='resources.html'">목록으로 돌아가기</button>
+  </div>
+
+  <footer>
+    <p>연락처: 123-456-7890 | © 2025 대학일자리플러스센터</p>
+  </footer>
+</body>
+</html>

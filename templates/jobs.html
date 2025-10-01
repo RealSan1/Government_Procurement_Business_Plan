@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채용정보 - 대학일자리플러스센터</title>
+<style>
+    body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#fff; color:#333; padding-top:60px;}
+    .search-filter-container { padding:10px; background:#F9F9F9; text-align:center; box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+    .search-container { margin-bottom:10px;}
+    .search-container input { margin:15px; padding:8px; font-size:1.2rem; width:70%; max-width:815px; border:1px solid #E0E0E0; border-radius:5px;}
+    .search-container button { padding:8px 15px; font-size:1.2rem; background:#003087; color:#fff; border:none; border-radius:5px; cursor:pointer;}
+    .search-container button:hover { background:#0055D4;}
+    .filter-table { width:100%; max-width:900px; margin:0 auto; border-collapse:collapse; background:#fff;}
+    .filter-table th { background:#E0E0E0; padding:0.8rem; text-align:center; font-size:1.2rem; border:1px solid #ddd;}
+    .filter-table td { padding:0.5rem; border:1px solid #ddd; vertical-align:top;}
+    .filter-group { text-align:left; padding:0.5rem;}
+    .filter-scroll { max-height:350px; overflow-y:auto; }
+    .filter-group label { display:block; font-size:1.1rem; margin:0.3rem 0;}
+    .filter-group input[type="checkbox"] { width:1.2rem; height:1.2rem; margin-right:0.5rem;}
+    .service-list { max-width:900px; margin:2rem auto; padding:1rem; background:#fff; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.15);}
+    .service-item { background:#F9F9F9; margin-bottom:0.8rem; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;}
+    .service-item:hover { transform:translateY(-3px); box-shadow:0 4px 10px rgba(0,0,0,0.15);}
+    .service-item-header { padding:1.2rem; font-size:1.2rem; font-weight:600; display:grid; justify-content:space-between; align-items:center;}
+    .service-category-label, .service-category-Etype { display:inline-flex; justify-content:center; align-items:center; padding:0 12px; height:30px; background:#003087; color:#fff; border-radius:10px; font-size:0.9rem; margin-right:5px;}
+    .service-item-details { display:none; padding:1.2rem; background:#fff; font-size:1.1rem; color:#555; border-top:1px solid #E0E0E0; line-height:1.8;}
+    .service-item.active .service-item-details { display:block;}
+
+    /* 페이지네이션 */
+    #pagination { 
+        display:flex; 
+        justify-content:center; 
+        flex-wrap:wrap; 
+        gap:5px; 
+        margin:1.5rem 0; 
+        min-height:40px; /* 비어 있어도 공간 확보 */
+        margin-bottom: 120px;
+    }
+    #pagination button { padding:6px 12px; cursor:pointer; border:1px solid #ddd; border-radius:5px; background:#f5f5f5; transition:0.2s; min-width:35px; }
+    #pagination button:hover { background:#003087; color:#fff; }
+    #pagination button.active { font-weight:bold; background:#003087; color:#fff; }
+    #pagination button.disabled { opacity:0.5; cursor:default; }
+</style>
+</head>
+<body>
+{% include "header.html" %}
+
+<div class="search-filter-container">
+    <div class="search-container">
+        <input type="text" placeholder="채용정보 검색..." aria-label="채용정보 검색" id="search-input">
+        <button id="search-btn">검색</button>
+    </div>
+    <table class="filter-table">
+        <thead>
+            <tr>
+                <th>직무</th>
+                <th>근무지</th>
+                <th>고용</th>
+                <th>경력</th>
+            </tr>
+        </thead>
+        <tbody id="filter-body">
+            <tr>
+                <td class="filter-group" id="filter-job"><div class="filter-scroll"></div></td>
+                <td class="filter-group" id="filter-location"><div class="filter-scroll"></div></td>
+                <td class="filter-group" id="filter-etype"><div class="filter-scroll"></div></td>
+                <td class="filter-group" id="filter-career"><div class="filter-scroll"></div></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="service-list"></div>
+<div id="pagination"></div>
+
+{% include "footer.html" %}
+
+<script>
+let currentPage = 1;
+const itemsPerPage = 10;
+let allData = [];
+
+fetch("http://127.0.0.1:8000/jobinfo")
+.then(res => res.json())
+.then(data => {
+    allData = [...data];
+
+    // --- 필터 값 수집 ---
+    const sets = { job:new Set(), location:new Set(), etype:new Set(), career:new Set() };
+    data.forEach(job => {
+        sets.job.add(job.직무명);
+        job.근무지.split('/').forEach(v=>sets.location.add(v.trim()));
+        job.고용형태.split('/').forEach(v=>sets.etype.add(v.trim()));
+        job.채용구분.split('/').forEach(v=>sets.career.add(v.trim()));
+    });
+
+    function renderCheckboxes(containerId, values, key){
+        const container = document.querySelector(`#${containerId} .filter-scroll`);
+        values.sort((a,b)=>a.localeCompare(b,'ko')).forEach(v=>{
+            const label = document.createElement("label");
+            label.innerHTML = `<input type="checkbox" class="filter-toggle" data-key="${key}" value="${v}">${v}`;
+            container.appendChild(label);
+        });
+    }
+
+    renderCheckboxes("filter-job", Array.from(sets.job), "job");
+    renderCheckboxes("filter-location", Array.from(sets.location), "location");
+    renderCheckboxes("filter-etype", Array.from(sets.etype), "etype");
+    renderCheckboxes("filter-career", Array.from(sets.career), "career");
+
+    function filteredItems(){
+        const selectedFilters = { job:[], location:[], etype:[], career:[] };
+        document.querySelectorAll(".filter-toggle:checked").forEach(cb=>{
+            selectedFilters[cb.dataset.key].push(cb.value);
+        });
+        const searchText = document.getElementById("search-input").value.trim();
+
+        return allData.filter(job=>{
+            if(selectedFilters.job.length && !selectedFilters.job.includes(job.직무명)) return false;
+            if(selectedFilters.location.length && !job.근무지.split('/').some(v=>selectedFilters.location.includes(v.trim()))) return false;
+            if(selectedFilters.etype.length && !job.고용형태.split('/').some(v=>selectedFilters.etype.includes(v.trim()))) return false;
+            if(selectedFilters.career.length && !job.채용구분.split('/').some(v=>selectedFilters.career.includes(v.trim()))) return false;
+            if(searchText && !job.제목.includes(searchText) && !job.기관명.includes(searchText)) return false;
+            return true;
+        });
+    }
+
+    function renderList(items){
+        const list = document.querySelector(".service-list");
+        list.innerHTML = "";
+        const start = (currentPage-1)*itemsPerPage;
+        const pagedItems = items.slice(start, start+itemsPerPage);
+
+        pagedItems.forEach(job=>{
+            const item = document.createElement("div");
+            item.className = "service-item";
+            item.dataset.job = job.직무명;
+            item.dataset.location = job.근무지;
+            item.dataset.etype = job.고용형태;
+            item.dataset.career = job.채용구분;
+
+            let locs = job.근무지.split('/');
+            let locLabel = locs.length>2?'전국':locs.join('/');
+            let etypeArr = job.고용형태.split('/');
+            let etypeLabel = etypeArr.length>2?'공고확인':etypeArr.join('/');
+
+            item.innerHTML = `
+                <div class="service-item-header">
+                    ${job.제목} - ${job.기관명}
+                    <div class="category-labels">
+                        <span class="service-category-label">${job.직무명}</span>
+                        <span class="service-category-label">${locLabel}</span>
+                        <span class="service-category-Etype">${etypeLabel}</span>
+                    </div>
+                </div>
+                <div class="service-item-details">
+                    <p>${job.기관명}에서 ${job.직무명}을 모집합니다.<br>
+                    지원 대상: ${job.채용구분}, 지역: ${job.근무지}, 고용형태: ${job.고용형태}</p>
+                    <p>마감일: ${job.공고마감일}</p>
+                    <p>지원 링크: <a href="${job.원문URL}" target="_blank">${job.원문URL}</a></p>
+                </div>
+            `;
+            list.appendChild(item);
+            item.addEventListener("click",()=>item.classList.toggle("active"));
+        });
+
+        renderPagination(items.length);
+    }
+
+    function renderPagination(totalItems){
+        const totalPages = Math.ceil(totalItems/itemsPerPage);
+        const container = document.getElementById("pagination");
+        container.innerHTML="";
+        if(totalPages<=1) return;
+
+        const groupSize = 10;
+        let currentGroupStart = Math.floor((currentPage-1)/groupSize)*groupSize + 1;
+        let currentGroupEnd = Math.min(currentGroupStart + groupSize - 1, totalPages);
+
+        function createBtn(label, page, disabled=false){
+            const btn = document.createElement("button");
+            btn.textContent = label;
+            if(disabled) btn.classList.add("disabled");
+            if(!disabled){
+                btn.onclick = () => { currentPage=page; renderList(filteredItems()); };
+            }
+            return btn;
+        }
+
+        container.appendChild(createBtn("<<", 1, currentPage===1));
+        container.appendChild(createBtn("<", currentGroupStart-1, currentGroupStart===1));
+
+        for(let i=currentGroupStart;i<=currentGroupEnd;i++){
+            const btn = createBtn(i, i);
+            if(i===currentPage) btn.classList.add("active");
+            container.appendChild(btn);
+        }
+
+        container.appendChild(createBtn(">", currentGroupEnd+1, currentGroupEnd===totalPages));
+        container.appendChild(createBtn(">>", totalPages, currentPage===totalPages));
+    }
+
+    document.querySelectorAll(".filter-toggle").forEach(cb=>{
+        cb.addEventListener("change",()=>{ currentPage=1; renderList(filteredItems()); });
+    });
+    document.getElementById("search-btn").addEventListener("click",()=>{ currentPage=1; renderList(filteredItems()); });
+
+    renderList(allData);
+});
+</script>
+</body>
+</html>

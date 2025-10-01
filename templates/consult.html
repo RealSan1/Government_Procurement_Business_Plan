@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담신청 - 대학일자리플러스센터</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #FFFFFF;
+            color: #333333;
+            padding-top: 60px;
+            /* 헤더 고정 시 여백 */
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 60px auto 20px;
+            padding: 20px;
+            background: #F9F9F9;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #E0E0E0;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-group button {
+            background: #003087;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background: #0055D4;
+        }
+
+        /* 슬라이더 영역 */
+        .consult-slider {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slides-wrapper {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.3s ease;
+            gap: 10px;
+        }
+
+        .consult-card {
+            min-width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+
+        .consult-item {
+            background: #fff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+        }
+
+        /* 상담 내역 스크롤 영역 */
+        .consult-list {
+            max-height: 510px;
+            /* 고정 높이 */
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        /* 스크롤바 커스터마이징 */
+        .consult-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .consult-list::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .consult-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        .consult-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 좌우 버튼 */
+        .slide-btn {
+            position: absolute;
+            top: 5px;
+            transform: translateY(0);
+            background: #003087;
+            color: white;
+            border: none;
+            font-size: 18px;
+            width: 30px;
+            height: 30px;
+            /* border-radius: 50%; */
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .slide-btn:hover {
+            opacity: 1;
+            background: #0055D4;
+        }
+
+        .prev-btn {
+            left: 10px;
+        }
+
+        .next-btn {
+            right: 10px;
+        }
+
+        /* 하단 점 네비게이션 */
+        .dots {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin: 0 4px;
+            background-color: #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background-color: #003087;
+        }
+    </style>
+</head>
+
+<body>
+    <header></header>
+    {% include "header.html" %}
+
+    <div class="form-container">
+        <h3>상담 신청 & 내역</h3>
+        <div class="consult-slider">
+            <button class="slide-btn prev-btn">&lt;</button>
+            <div class="slides-wrapper">
+                <div class="slides" id="myConsultsSlides">
+                    <!-- 상담 신청 카드 -->
+                    <div class="consult-card">
+                        <h4>상담 신청</h4>
+                        <form id="consultForm">
+                            <div class="form-group">
+                                <label for="userId">사용자ID:</label>
+                                <input type="text" id="userId" value="202547018" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="consultant">상담사:</label>
+                                <select id="consultant"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="type">상담유형:</label>
+                                <select id="type">
+                                    <option value="진로">진로상담</option>
+                                    <option value="취업">취업상담</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">신청일자:</label>
+                                <input type="date" id="date" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="memo">상담 요청사항 (선택):</label>
+                                <textarea id="memo" rows="3" placeholder="요청사항"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit">제출</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- 상담 내역 카드 -->
+                    <div class="consult-card">
+                        <h4>상담 내역</h4>
+                        <div id="consultListContainer" class="consult-list"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="slide-btn next-btn">&gt;</button>
+        </div>
+        <div class="dots" id="sliderDots"></div>
+    </div>
+
+    {% include "footer.html" %}
+</body>
+
+<script>
+    let currentIndex = 0;
+
+    async function loadConsultants() {
+        const res = await fetch("http://127.0.0.1:8000/consultants");
+        const consultants = await res.json();
+        const select = document.getElementById("consultant");
+        consultants.forEach(c => {
+            const option = document.createElement("option");
+            option.value = c.상담사ID;
+            option.textContent = c.이름;
+            select.appendChild(option);
+        });
+    }
+
+    // 신청내역 불러오기
+    async function loadMyConsults() {
+        const 학번 = document.getElementById('userId').value;
+        try {
+            const res = await fetch(`http://127.0.0.1:8000/consult/${학번}`);
+            const consults = await res.json();
+
+            const container = document.getElementById('consultListContainer');
+            container.innerHTML = '';
+
+            consults.forEach(c => {
+                const div = document.createElement('div');
+                let dateStr = c.신청일시 ? c.신청일시.replace('T', ' ').slice(0, 16) : '';
+                div.className = 'consult-item';
+                div.innerHTML = `
+                    <p><strong>상담사:</strong> ${c.상담사명}</p>
+                    <p><strong>유형:</strong> ${c.상담유형}</p>
+                    <p><strong>상태:</strong> ${c.상태}</p>
+                    <p><strong>신청일:</strong> ${dateStr}</p>
+                    <p><strong>상담 요청사항:</strong> ${c.메모 || ' '}</p>
+                `;
+                container.appendChild(div);
+            });
+        } catch (err) {
+            console.error("상담 내역 불러오기 실패:", err);
+        }
+    }
+
+    function updateSlide() {
+        const slides = document.getElementById('myConsultsSlides');
+        const cardWidth = slides.children[0].getBoundingClientRect().width + 10;
+        slides.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+
+        // 점 active 업데이트
+        const dots = document.querySelectorAll('.dot');
+        dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+    }
+
+    // 좌우 버튼
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector(".prev-btn").addEventListener("click", () => {
+            currentIndex = Math.max(currentIndex - 1, 0);
+            updateSlide();
+        });
+        document.querySelector(".next-btn").addEventListener("click", () => {
+            const slides = document.getElementById('myConsultsSlides');
+            currentIndex = Math.min(currentIndex + 1, slides.children.length - 1);
+            updateSlide();
+        });
+    });
+
+    function createDots(count) {
+        const dotsContainer = document.getElementById('sliderDots');
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'dot';
+            dot.addEventListener('click', () => {
+                currentIndex = i;
+                updateSlide();
+            });
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+    document.getElementById('consultForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = {
+            학번: document.getElementById('userId').value,
+            상담사ID: document.getElementById('consultant').value,
+            상담유형: document.getElementById('type').value,
+            메모: document.getElementById('memo').value || null
+        };
+        const res = await fetch('http://127.0.0.1:8000/consult/apply', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        alert(result.message || result.error);
+        if (result.message) loadMyConsults();
+    });
+
+    function setTodayDate() {
+        const today = new Date();
+        document.getElementById("date").value =
+            `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadConsultants();
+        setTodayDate();
+        loadMyConsults();
+    });
+</script>
+
+</html>
