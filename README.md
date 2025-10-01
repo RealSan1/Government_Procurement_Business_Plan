@@ -36,7 +36,8 @@
   - **Data Layer (데이터베이스)**: Oracle 11g 또는 MS SQL로 데이터 영속성 관리.
 - **외부 API**: 고용24, 잡코리아 등 연계.
 
-<img width="639" height="237" alt="image" src="https://github.com/user-attachments/assets/1335197c-b3fc-4295-abe7-c841f1417698" />
+<img width="985" height="353" alt="image" src="https://github.com/user-attachments/assets/06c272f2-efa8-438a-b4e0-86ca4871c576" />
+
 
 ## 구현 계획 및 일정 (Gantt Chart)
 
@@ -47,14 +48,15 @@
 4. 테스트 및 안정화 (M0+10주 ~ M0+11주): 단위/통합 테스트, 보안 최적화 → 테스트 보고서.
 5. 배포 및 유지보수 준비 (M0+11주 ~ M0+12주): 교육, 완료보고서 제출 → 매뉴얼.
 
-<img width="2000" height="600" alt="image" src="https://github.com/user-attachments/assets/a2a0757a-5f16-4ff5-bc77-b67ddd13ffd1" />
+<img width="2000" height="600" alt="image" src="https://github.com/user-attachments/assets/b027be13-50fc-459c-8ce3-24e8578fc85e" />
 
 ## 백엔드 개발 상세
 - **API 요청**: 고용24, 기획재정부, 잡코리아 API 연계 (강소기업, 직업정보, 직무정보, 학과정보 등). [관련 이슈 보기](https://github.com/RealSan1/Government_Procurement_Business_Plan/issues/1)
 - **상담 시스템**: 학생/관리자/상담사 역할 분리, 상담유형/내용/승인/일정조율 처리.
 - **학과정보 API**: 전공계열, 전공명, 설명, 개설대학, 입학정원, 지원자수, 졸업인원, 관련직업/자격증/수업과목, 모집현황 등.
 
-<img width="667" height="237" alt="image" src="https://github.com/user-attachments/assets/c3581936-9d8e-40d4-9187-ba6a97ef7d0e" />
+<img width="1020" height="350" alt="image" src="https://github.com/user-attachments/assets/5caa315e-9150-46ad-9b03-243be1cdefa8" />
+
 
 ## 기본 디자인
 - 메인화면, 채용정보, 상담 신청, 자료실, 게시글 등 UI 디자인 포함.
