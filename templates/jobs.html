@@ -80,7 +80,7 @@ let currentPage = 1;
 const itemsPerPage = 10;
 let allData = [];
 
-fetch("http://127.0.0.1:8000/jobinfo")
+fetch("https://government-procurement-business-plan.onrender.com/jobinfo")
 .then(res => res.json())
 .then(data => {
     allData = [...data];
