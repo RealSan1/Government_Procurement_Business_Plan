@@ -1,35 +1,31 @@
 import csv
-import pymysql
-
+import db
 from datetime import datetime
+
+# DB 연결
+conn = db.get_conn()
+cur = conn.cursor()
 
 def to_date(s):
     return datetime.strptime(s.strip(), "%Y.%m.%d").date()
 
-
-# DB 연결
-conn = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="rootpw",
-    db="jobplus",
-    charset="utf8mb4"
-)
-cur = conn.cursor()
-
 def insert_job(job_name):
-    """직무 삽입 (중복 방지)"""
-    cur.execute("INSERT IGNORE INTO 직무 (직무명) VALUES (%s)", (job_name,))
+    """직무 삽입 (중복 방지, PostgreSQL 방식)"""
+    cur.execute("""
+        INSERT INTO 직무 (직무명) VALUES (%s)
+        ON CONFLICT (직무명) DO NOTHING
+        RETURNING 직무id;
+    """, (job_name,))
+    result = cur.fetchone()
+    if result:
+        직무ID = result["직무id"]
+    else:
+        cur.execute("SELECT 직무id FROM 직무 WHERE 직무명=%s", (job_name,))
+        직무ID = cur.fetchone()["직무id"]
     conn.commit()
-    cur.execute("SELECT 직무ID FROM 직무 WHERE 직무명=%s", (job_name,))
-    return cur.fetchone()[0]
+    return 직무ID
 
 def insert_recruit(row):
-    from datetime import datetime
-    
-    def to_date(s):
-        return datetime.strptime(s.strip(), "%Y.%m.%d").date()
-
     start_date = to_date(row["공고기간"].split("~")[0])
     end_date = to_date(row["공고기간"].split("~")[1])
 
@@ -37,19 +33,20 @@ def insert_recruit(row):
     people = int(people) if people.isdigit() else 0
 
     cur.execute("""
-        INSERT INTO 채용공고 
+        INSERT INTO 채용공고
         (제목, 기관명, 고용형태, 대체인력여부, 채용구분, 공고시작일, 공고마감일, 학력정보,
-         근무지, 채용인원, 원문URL, 등록일, 상태)
+         근무지, 채용인원, 원문url, 등록일, 상태)
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        RETURNING 공고id;
     """, (
         row["제목"], row["기관명"], row["고용형태"], row["대체인력여부"], row["채용구분"],
         start_date, end_date,
         row["학력정보"], row["근무지"], people,
         row["원문URL"], to_date(row["등록일"]), row["상태"]
     ))
+    공고ID = cur.fetchone()["공고id"]
     conn.commit()
-    return cur.lastrowid
-
+    return 공고ID
 
 def process_csv(file_path):
     with open(file_path, "r", encoding="cp949") as f:
@@ -66,11 +63,15 @@ def process_csv(file_path):
                     jobs.append(token)
 
             # 직무 삽입 및 매핑
-            for job in set(jobs):  # 중복 제거
+            for job in set(jobs):
                 직무ID = insert_job(job)
-                cur.execute("INSERT IGNORE INTO 채용_직무 (공고ID, 직무ID) VALUES (%s,%s)", (공고ID, 직무ID))
+                cur.execute("""
+                    INSERT INTO 채용_직무 (공고id, 직무id)
+                    VALUES (%s,%s)
+                    ON CONFLICT DO NOTHING;
+                """, (공고ID, 직무ID))
                 conn.commit()
 
-# 실행 https://www.alio.go.kr/information/informationRecruitList.do
+# 실행
 process_csv("채용공고목록_2025-09-19.csv")
 conn.close()

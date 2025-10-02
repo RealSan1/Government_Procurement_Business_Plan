@@ -1,11 +1,13 @@
-import pymysql
+import os
+from dotenv import load_dotenv
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from urllib.parse import urlparse
+
+load_dotenv(dotenv_path="apikey.env")
 
 def get_conn():
-    return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="rootpw",
-        db="jobplus",
-        charset="utf8mb4",
-        cursorclass=pymysql.cursors.DictCursor
+    return psycopg2.connect(
+        os.environ["DATABASE_URL"],
+        cursor_factory=RealDictCursor
     )
