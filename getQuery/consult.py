@@ -1,35 +1,38 @@
 from db import get_conn
 from typing import List, Dict
 
-def apply_consult(학번, 상담유형, 상담사ID, 메모=None):
+def apply_consult(학번, 상담유형, 상담사id, 메모=None):
+    if 상담사id == "undefined":
+        상담사id = None
     conn = get_conn()
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO 상담신청 (학번, 상담유형, 상담사ID, 메모)
+                INSERT INTO 상담신청 (학번, 상담유형, "상담사id", 메모)
                 VALUES (%s, %s, %s, %s)
-            """, (학번, 상담유형, 상담사ID, 메모))
+            """, (학번, 상담유형, 상담사id, 메모))
         conn.commit()
     finally:
         conn.close()
 
-def get_consultants():
+
+def get_consultants() -> List[Dict]:
     conn = get_conn()
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT 상담사ID, 이름 FROM 상담사")
+            cur.execute('SELECT "상담사id", 이름 FROM 상담사')
             return cur.fetchall()
     finally:
         conn.close()
 
-def fetch_user_consults(학번: str) -> list[dict]:
+def fetch_user_consults(학번: str) -> List[Dict]:
     conn = get_conn()
     try:
         with conn.cursor() as cur:
             sql = """
                 SELECT c.학번, s.이름 AS 상담사명, c.상담유형, c.신청일시, c.메모, c.상태, c.처리시간
                 FROM 상담신청 c
-                JOIN 상담사 s ON c.상담사ID = s.상담사ID
+                JOIN 상담사 s ON c."상담사id" = s."상담사id"
                 WHERE c.학번 = %s
                 ORDER BY c.신청일시 DESC
             """
@@ -47,20 +50,18 @@ def get_student_consults(학번):
     finally:
         conn.close()
 
-
-def assign_consult(상담ID, 상담사ID, 상담일시=None):
+def assign_consult(상담id, 상담사id, 상담일시=None):
     conn = get_conn()
     try:
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE 상담신청
-                SET 상태='승인', 상담사ID=%s, 상담일시=%s
-                WHERE 상담ID=%s
-            """, (상담사ID, 상담일시, 상담ID))
+                SET 상태='승인', "상담사id"=%s, 상담일시=%s
+                WHERE 상담id=%s
+            """, (상담사id, 상담일시, 상담id))
         conn.commit()
     finally:
         conn.close()
-
 
 def fetch_consults() -> List[Dict]:
     """상담 신청 목록 조회"""
@@ -68,12 +69,11 @@ def fetch_consults() -> List[Dict]:
     try:
         with conn.cursor() as cur:
             sql = """
-                SELECT 상담신청ID, 학번, 상태, 상담유형, 메모, 신청일시
+                SELECT 상담신청id, 학번, 상태, 상담유형, 메모, 신청일시
                 FROM 상담신청
             """
             cur.execute(sql)
-            rows = cur.fetchall()
-        return rows
+            return cur.fetchall()
     finally:
         conn.close()
 
@@ -83,7 +83,7 @@ def update_consult_status(consult_id: int, status: str):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "UPDATE 상담신청 SET 상태=%s WHERE 상담신청ID=%s",
+                'UPDATE 상담신청 SET 상태=%s WHERE 상담id=%s',
                 (status, consult_id)
             )
             conn.commit()
@@ -96,7 +96,7 @@ def assign_consultant(consult_id: int, consultant_id: int):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "UPDATE 상담신청 SET 상담자ID=%s WHERE 상담신청ID=%s",
+                'UPDATE 상담신청 SET "상담사id"=%s WHERE 상담id=%s',
                 (consultant_id, consult_id)
             )
             conn.commit()

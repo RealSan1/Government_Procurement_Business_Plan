@@ -250,7 +250,7 @@
         const select = document.getElementById("consultant");
         consultants.forEach(c => {
             const option = document.createElement("option");
-            option.value = c.상담사ID;
+            option.value = c.상담사id;
             option.textContent = c.이름;
             select.appendChild(option);
         });
@@ -325,7 +325,7 @@
         e.preventDefault();
         const data = {
             학번: document.getElementById('userId').value,
-            상담사ID: document.getElementById('consultant').value,
+            상담사id: document.getElementById('consultant').value,
             상담유형: document.getElementById('type').value,
             메모: document.getElementById('memo').value || null
         };

@@ -68,11 +68,11 @@
             <tr>
                 <td>{{ consult.학번 }}</td>
                 <td>{{ consult.신청일시 }}</td>
-                <td id="status-{{ consult.상담신청ID }}">{{ consult.상태 }}</td>
+                <td id="status-{{ consult.상담신청id }}">{{ consult.상태 }}</td>
                 <td>{{ consult.상담유형 }}</td>
                 <td>
-                    <button class="action-btn approve" data-id="{{ consult.상담신청ID }}" data-action="approve">승인</button>
-                    <button class="action-btn reject" data-id="{{ consult.상담신청ID }}" data-action="reject">거절</button>
+                    <button class="action-btn approve" data-id="{{ consult.상담신청id }}" data-action="approve">승인</button>
+                    <button class="action-btn reject" data-id="{{ consult.상담신청id }}" data-action="reject">거절</button>
                 </td>
             </tr>
             {% endfor %}

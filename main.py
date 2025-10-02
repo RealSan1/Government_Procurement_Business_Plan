@@ -52,7 +52,7 @@ async def apply_consult_api(request: Request):
         data = await request.json()
         학번 = data.get("학번")
         상담유형 = data.get("상담유형")
-        상담사ID = data.get("상담사ID")
+        상담사ID = data.get("상담사id")
         메모 = data.get("메모", None)
 
         apply_consult(학번, 상담유형, 상담사ID, 메모)
