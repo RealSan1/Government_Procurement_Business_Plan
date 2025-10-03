@@ -25,9 +25,17 @@ def index_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/jobs", response_class=HTMLResponse)
-def jobs_page(request: Request):
-    return templates.TemplateResponse("jobs.html", {"request": request})
+@app.get("/jobs/external", response_class=HTMLResponse)
+def jobs_page_ex(request: Request):
+    return templates.TemplateResponse("jobs/external.html", {"request": request})
+
+@app.get("/jobs/internal", response_class=HTMLResponse)
+def jobs_page_in(request: Request):
+    return templates.TemplateResponse("jobs/internal.html", {"request": request})
+
+@app.get("/jobs/post", response_class=HTMLResponse)
+def jobs_page_post(request: Request):
+    return templates.TemplateResponse("jobs/post.html", {"request": request})
 
 @app.get("/jobinfo")
 def get_jobs():
