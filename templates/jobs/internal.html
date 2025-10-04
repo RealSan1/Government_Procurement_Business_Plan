@@ -96,7 +96,9 @@
 <div class="service-list"></div>
 <div id="pagination"></div>
 <div class="post-button-container">
-    <a href="/jobs/post" class="post-button">공고 작성</a>
+    {% if show_button %}
+        <a href="/jobs/post" class="post-button">공고 작성</a>
+    {% endif %}
 </div>
 
 

@@ -31,11 +31,18 @@ def jobs_page_ex(request: Request):
 
 @app.get("/jobs/internal", response_class=HTMLResponse)
 def jobs_page_in(request: Request):
-    return templates.TemplateResponse("jobs/internal.html", {"request": request})
+    show_button = request.cookies.get("admin_cookie") == "show"
+    return templates.TemplateResponse("jobs/internal.html", {
+        "request": request,
+        "show_button": show_button
+    })
 
 @app.get("/jobs/post", response_class=HTMLResponse)
 def jobs_page_post(request: Request):
+    if request.cookies.get("admin_cookie") != "show":
+        return HTMLResponse("권한 없음", status_code=403)
     return templates.TemplateResponse("jobs/post.html", {"request": request})
+
 
 @app.get("/jobinfo")
 def get_jobs():
