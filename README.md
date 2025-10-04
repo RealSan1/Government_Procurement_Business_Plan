@@ -56,8 +56,10 @@
 - **상담 시스템**: 학생/관리자/상담사 역할 분리, 상담유형/내용/승인/일정조율 처리.
 - **학과정보 API**: 전공계열, 전공명, 설명, 개설대학, 입학정원, 지원자수, 졸업인원, 관련직업/자격증/수업과목, 모집현황 등.
 
+- API 링크
+  - [고용24](https://www.work24.go.kr/cm/e/a/0110/selectOpenApiIntro.do?bbsClCd=OosccI71O3P2dBxVz5A40Q%3D%3D)
+  - [채용공고](https://www.data.go.kr/index.do)
 <img width="1020" height="350" alt="image" src="https://github.com/user-attachments/assets/5caa315e-9150-46ad-9b03-243be1cdefa8" />
-
 
 ## 기본 디자인
 - 메인화면, 채용정보, 상담 신청, 자료실, 게시글 등 UI 디자인 포함.
