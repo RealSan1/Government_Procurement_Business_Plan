@@ -6,7 +6,7 @@ from pymysql.cursors import DictCursor
 # load_dotenv("apikey.env")
 # DB_USER = os.getenv("DATABASE_USER")
 # DB_PASS = os.getenv("DATABASE_PASSWORD")
-# DB_HOST = os.getenv("DATABASE_URL")
+# DB_HOST = os.getenv("DATABASE_HOST")
 # DB_NAME = os.getenv("DATABASE_NAME")
 
 # 배포 시 (기본값 설정)
@@ -21,7 +21,7 @@ for var in ["DATABASE_USER", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_NAM
         
 DB_USER = os.environ.get("DATABASE_USER", "")
 DB_PASS = os.environ.get("DATABASE_PASSWORD", "")
-DB_HOST = os.environ.get("DATABASE_URL", "")
+DB_HOST = os.environ.get("DATABASE_HOST", "")
 DB_NAME = os.environ.get("DATABASE_NAME", "")
 
 def get_conn():
