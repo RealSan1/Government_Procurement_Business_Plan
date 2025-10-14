@@ -31,7 +31,7 @@ def jobs_page_ex(request: Request):
 
 @app.get("/jobs/internal", response_class=HTMLResponse)
 def jobs_page_in(request: Request):
-        # 관리자 버튼 표시 여부
+    # 관리자 버튼 표시 여부
     show_button = request.cookies.get("admin_cookie") == "show"
     
     # DB에서 공고 가져오기
