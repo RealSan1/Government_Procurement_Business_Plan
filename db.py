@@ -1,31 +1,18 @@
 import os
 import pymysql
 from pymysql.cursors import DictCursor
+from dotenv import load_dotenv
 
-# 개발 시
-# load_dotenv("apikey.env")
-# DB_USER = os.getenv("DATABASE_USER")
-# DB_PASS = os.getenv("DATABASE_PASSWORD")
-# DB_HOST = os.getenv("DATABASE_HOST")
-# DB_NAME = os.getenv("DATABASE_NAME")
+# 개발 환경이면 .env 파일 로드
+if os.path.exists(".env"):
+    load_dotenv(".env")
 
-# 배포 시 (기본값 설정)
-
-for var in ["DATABASE_USER", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_NAME"]:
-    value = os.environ.get(var)
-    if value:
-        print(f"{var} is set ✅")
-    else:
-        print(f"{var} is NOT set ❌")
-
-        
 DB_USER = os.environ.get("DATABASE_USER", "")
 DB_PASS = os.environ.get("DATABASE_PASSWORD", "")
 DB_HOST = os.environ.get("DATABASE_HOST", "")
 DB_NAME = os.environ.get("DATABASE_NAME", "")
 
 def get_conn():
-    """MySQL 데이터베이스 연결"""
     return pymysql.connect(
         host=DB_HOST,
         user=DB_USER,
