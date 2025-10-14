@@ -78,52 +78,55 @@
 <script>
 let currentPage = 1;
 const itemsPerPage = 10;
-let allData = [];
+let allData = {{ jobs|tojson }};
 
-fetch("https://government-procurement-business-plan.onrender.com/jobinfo")
-.then(res => res.json())
-.then(data => {
-    allData = [...data];
+// --- 필터 값 수집 ---
+const sets = { job:new Set(), location:new Set(), etype:new Set(), career:new Set() };
+allData.forEach(job => {
+    sets.job.add(job.직무명);
+    job.근무지.split('/').forEach(v=>sets.location.add(v.trim()));
+    job.고용형태.split('/').forEach(v=>sets.etype.add(v.trim()));
+    job.채용구분.split('/').forEach(v=>sets.career.add(v.trim()));
+});
 
-    // --- 필터 값 수집 ---
-    const sets = { job:new Set(), location:new Set(), etype:new Set(), career:new Set() };
-    data.forEach(job => {
-        sets.job.add(job.직무명);
-        job.근무지.split('/').forEach(v=>sets.location.add(v.trim()));
-        job.고용형태.split('/').forEach(v=>sets.etype.add(v.trim()));
-        job.채용구분.split('/').forEach(v=>sets.career.add(v.trim()));
+function renderCheckboxes(containerId, values, key){
+    const container = document.querySelector(`#${containerId} .filter-scroll`);
+    values.sort((a,b)=>a.localeCompare(b,'ko')).forEach(v=>{
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="checkbox" class="filter-toggle" data-key="${key}" value="${v}">${v}`;
+        container.appendChild(label);
     });
+}
 
-    function renderCheckboxes(containerId, values, key){
-        const container = document.querySelector(`#${containerId} .filter-scroll`);
-        values.sort((a,b)=>a.localeCompare(b,'ko')).forEach(v=>{
-            const label = document.createElement("label");
-            label.innerHTML = `<input type="checkbox" class="filter-toggle" data-key="${key}" value="${v}">${v}`;
-            container.appendChild(label);
-        });
-    }
+renderCheckboxes("filter-job", Array.from(sets.job), "job");
+renderCheckboxes("filter-location", Array.from(sets.location), "location");
+renderCheckboxes("filter-etype", Array.from(sets.etype), "etype");
+renderCheckboxes("filter-career", Array.from(sets.career), "career");
 
-    renderCheckboxes("filter-job", Array.from(sets.job), "job");
-    renderCheckboxes("filter-location", Array.from(sets.location), "location");
-    renderCheckboxes("filter-etype", Array.from(sets.etype), "etype");
-    renderCheckboxes("filter-career", Array.from(sets.career), "career");
+// 체크박스 이벤트 등록
+document.querySelectorAll(".filter-toggle").forEach(cb=>{
+    cb.addEventListener("change",()=>{ currentPage=1; renderList(filteredItems()); });
+});
 
-    function filteredItems(){
-        const selectedFilters = { job:[], location:[], etype:[], career:[] };
-        document.querySelectorAll(".filter-toggle:checked").forEach(cb=>{
-            selectedFilters[cb.dataset.key].push(cb.value);
-        });
-        const searchText = document.getElementById("search-input").value.trim();
+// 검색 버튼 이벤트
+document.getElementById("search-btn").addEventListener("click",()=>{ currentPage=1; renderList(filteredItems()); });
 
-        return allData.filter(job=>{
-            if(selectedFilters.job.length && !selectedFilters.job.includes(job.직무명)) return false;
-            if(selectedFilters.location.length && !job.근무지.split('/').some(v=>selectedFilters.location.includes(v.trim()))) return false;
-            if(selectedFilters.etype.length && !job.고용형태.split('/').some(v=>selectedFilters.etype.includes(v.trim()))) return false;
-            if(selectedFilters.career.length && !job.채용구분.split('/').some(v=>selectedFilters.career.includes(v.trim()))) return false;
-            if(searchText && !job.제목.includes(searchText) && !job.기관명.includes(searchText)) return false;
-            return true;
-        });
-    }
+function filteredItems(){
+    const selectedFilters = { job:[], location:[], etype:[], career:[] };
+    document.querySelectorAll(".filter-toggle:checked").forEach(cb=>{
+        selectedFilters[cb.dataset.key].push(cb.value);
+    });
+    const searchText = document.getElementById("search-input").value.trim();
+
+    return allData.filter(job=>{
+        if(selectedFilters.job.length && !selectedFilters.job.includes(job.직무명)) return false;
+        if(selectedFilters.location.length && !job.근무지.split('/').some(v=>selectedFilters.location.includes(v.trim()))) return false;
+        if(selectedFilters.etype.length && !job.고용형태.split('/').some(v=>selectedFilters.etype.includes(v.trim()))) return false;
+        if(selectedFilters.career.length && !job.채용구분.split('/').some(v=>selectedFilters.career.includes(v.trim()))) return false;
+        if(searchText && !job.제목.includes(searchText) && !job.기관명.includes(searchText)) return false;
+        return true;
+    });
+}
 
     function renderList(items){
         const list = document.querySelector(".service-list");
@@ -206,7 +209,6 @@ fetch("https://government-procurement-business-plan.onrender.com/jobinfo")
     document.getElementById("search-btn").addEventListener("click",()=>{ currentPage=1; renderList(filteredItems()); });
 
     renderList(allData);
-});
 </script>
 </body>
 </html>

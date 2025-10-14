@@ -27,7 +27,12 @@ def index_page(request: Request):
 
 @app.get("/jobs/external", response_class=HTMLResponse)
 def jobs_page_ex(request: Request):
-    return templates.TemplateResponse("jobs/external.html", {"request": request})
+    jobs = fetch_jobs_ex()
+
+    return templates.TemplateResponse("jobs/external.html", {
+        "request": request,
+        "jobs": jobs
+        })
 
 @app.get("/jobs/internal", response_class=HTMLResponse)
 def jobs_page_in(request: Request):
@@ -97,16 +102,6 @@ async def reject_job(job_id: int = Form(...)):
     update_job_status(job_id, "거절")
     return JSONResponse({"success": True, "job_id": job_id})
 
-
-@app.get("/jobinfo")
-def get_jobs():
-    try:
-        rows = fetch_jobs_ex()
-        return JSONResponse(content=rows)
-    except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
-
-
 @app.get("/consult", response_class=HTMLResponse)
 def consult_page(request: Request):
     return templates.TemplateResponse("consult.html", {"request": request})
@@ -160,4 +155,4 @@ def resources_page(request: Request):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=True)
