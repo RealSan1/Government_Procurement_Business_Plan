@@ -243,46 +243,48 @@
 
 <script>
     let currentIndex = 0;
-
     async function loadConsultants() {
-        const res = await fetch("http://127.0.0.1:8000/consultants");
-        const consultants = await res.json();
-        const select = document.getElementById("consultant");
-        consultants.forEach(c => {
-            const option = document.createElement("option");
-            option.value = c.상담사id;
-            option.textContent = c.이름;
-            select.appendChild(option);
+    const consultants = {{ consultants|tojson }}; 
+    const select = document.getElementById("consultant");
+    consultants.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c.상담사id;
+        option.textContent = c.이름;
+        select.appendChild(option);
+    });
+}
+
+// 신청내역 불러오기
+async function loadMyConsults() {
+    const 학번 = document.getElementById('userId').value;
+    if (!학번) return; // 학번 없으면 종료
+
+    try {
+        // 상대경로 사용
+        const res = await fetch(`/consult/${학번}`);
+        const consults = await res.json();
+
+        const container = document.getElementById('consultListContainer');
+        container.innerHTML = '';
+
+        consults.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'consult-item';
+            let dateStr = c.신청일시 ? c.신청일시.replace('T', ' ').slice(0, 16) : '';
+            div.innerHTML = `
+                <p><strong>상담사:</strong> ${c.상담사명}</p>
+                <p><strong>유형:</strong> ${c.상담유형}</p>
+                <p><strong>상태:</strong> ${c.상태}</p>
+                <p><strong>신청일:</strong> ${dateStr}</p>
+                <p><strong>상담 요청사항:</strong> ${c.메모 || ' '}</p>
+            `;
+            container.appendChild(div);
         });
+    } catch (err) {
+        console.error("상담 내역 불러오기 실패:", err);
+        alert('상담 내역을 불러오는 중 오류가 발생했습니다.');
     }
-
-    // 신청내역 불러오기
-    async function loadMyConsults() {
-        const 학번 = document.getElementById('userId').value;
-        try {
-            const res = await fetch(`http://127.0.0.1:8000/consult/${학번}`);
-            const consults = await res.json();
-
-            const container = document.getElementById('consultListContainer');
-            container.innerHTML = '';
-
-            consults.forEach(c => {
-                const div = document.createElement('div');
-                let dateStr = c.신청일시 ? c.신청일시.replace('T', ' ').slice(0, 16) : '';
-                div.className = 'consult-item';
-                div.innerHTML = `
-                    <p><strong>상담사:</strong> ${c.상담사명}</p>
-                    <p><strong>유형:</strong> ${c.상담유형}</p>
-                    <p><strong>상태:</strong> ${c.상태}</p>
-                    <p><strong>신청일:</strong> ${dateStr}</p>
-                    <p><strong>상담 요청사항:</strong> ${c.메모 || ' '}</p>
-                `;
-                container.appendChild(div);
-            });
-        } catch (err) {
-            console.error("상담 내역 불러오기 실패:", err);
-        }
-    }
+}
 
     function updateSlide() {
         const slides = document.getElementById('myConsultsSlides');

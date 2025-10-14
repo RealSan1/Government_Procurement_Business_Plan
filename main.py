@@ -102,13 +102,21 @@ async def reject_job(job_id: int = Form(...)):
     update_job_status(job_id, "거절")
     return JSONResponse({"success": True, "job_id": job_id})
 
-@app.get("/consult", response_class=HTMLResponse)
-def consult_page(request: Request):
-    return templates.TemplateResponse("consult.html", {"request": request})
 
-@app.get("/consultants")
-def consultants():
-    return get_consultants()
+@app.get("/consult", response_class=HTMLResponse)
+def consult_page(request: Request, user_id: str = None):
+    """
+    user_id가 없으면 상담사 목록만 보여주고,
+    user_id가 있으면 해당 학생 상담 내역도 함께 넘김
+    """
+    consultants = get_consultants()  # 상담사 목록
+    user_consults = fetch_user_consults(user_id) if user_id else []
+
+    return templates.TemplateResponse("consult.html", {
+        "request": request,
+        "consultants": consultants,
+        "user_consults": user_consults
+    })
     
 @app.post("/consult/apply")
 async def apply_consult_api(request: Request):
