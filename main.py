@@ -153,6 +153,8 @@ def admin_update_status(consult_id: int, action: str):
 def resources_page(request: Request):
     return templates.TemplateResponse("resources.html", {"request": request})
 
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=True)
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", 8000)) 
+    uvicorn.run("main:app", host=host, port=port, reload=True)

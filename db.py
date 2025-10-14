@@ -12,6 +12,7 @@ DB_PASS = os.environ.get("DATABASE_PASSWORD")
 DB_HOST = os.environ.get("DATABASE_HOST")
 DB_NAME = os.environ.get("DATABASE_NAME")
 
+print(DB_USER, DB_PASS, DB_HOST, DB_NAME)
 def get_conn():
     return pymysql.connect(
         host=DB_HOST,
