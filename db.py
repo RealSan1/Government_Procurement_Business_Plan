@@ -24,6 +24,7 @@ def get_conn():
         user=DB_USER,
         password=DB_PASS,
         database=DB_NAME,
+        port=3306,
         charset="utf8mb4",
         cursorclass=DictCursor,
         autocommit=True
