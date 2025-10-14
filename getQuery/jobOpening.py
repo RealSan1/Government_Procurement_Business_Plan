@@ -1,7 +1,5 @@
 from db import get_conn
-from datetime import datetime
 from pymysql.cursors import DictCursor
-
 
 def fetch_jobs_ex():
     """
