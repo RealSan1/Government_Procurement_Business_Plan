@@ -10,6 +10,15 @@ from pymysql.cursors import DictCursor
 # DB_NAME = os.getenv("DATABASE_NAME")
 
 # 배포 시 (기본값 설정)
+
+for var in ["DATABASE_USER", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_NAME"]:
+    value = os.environ.get(var)
+    if value:
+        print(f"{var} is set ✅")
+    else:
+        print(f"{var} is NOT set ❌")
+
+        
 DB_USER = os.environ.get("DATABASE_USER", "")
 DB_PASS = os.environ.get("DATABASE_PASSWORD", "")
 DB_HOST = os.environ.get("DATABASE_URL", "")
