@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>강소기업 목록 - 대학일자리플러스센터</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background: #fff;
+      color: #333;
+      padding-top: 60px;
+    }
+    .content {
+      max-width: 900px;
+      margin: 0 auto 3rem;
+      padding: 1.5rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .post-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 1rem 0;
+      color: #003087;
+    }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+th, td {
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    text-align: center; /* 중앙 정렬 */
+}
+th {
+    background-color: #003087;
+    color: #fff;
+    font-weight: 600;
+}
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+tbody tr:hover {
+    background-color: #e6f0ff; /* 호버 시 강조 */
+    transition: 0.2s;
+}
+    /* 페이지네이션 */
+    #pagination { 
+        display:flex; 
+        justify-content:center; 
+        flex-wrap:wrap; 
+        gap:5px; 
+        margin:1.5rem 0; 
+        min-height:40px;
+        margin-bottom: 120px;
+    }
+    #pagination button { 
+        padding:6px 12px; 
+        cursor:pointer; 
+        border:1px solid #ddd; 
+        border-radius:5px; 
+        background:#f5f5f5; 
+        transition:0.2s; 
+        min-width:35px; 
+    }
+    #pagination button:hover { 
+        background:#003087; 
+        color:#fff; 
+    }
+    #pagination button.active { 
+        font-weight:bold; 
+        background:#003087; 
+        color:#fff; 
+    }
+    #pagination button.disabled { 
+        opacity:0.5; 
+        cursor:default; 
+    }
+  </style>
+</head>
+<body>
+  {% include "header.html" %}
+
+  <div class="content">
+      <h2 class="post-title">강소기업 목록</h2>
+      <div class="post-content">
+          <table id="company-table">
+              <thead>
+                  <tr>
+                      <th>기업명</th>
+                      <th>사업자등록번호</th>
+                      <th>업종명(상)</th>
+                      <th>대표자</th>
+                      <th>지역명</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <!-- JS로 페이징 적용해서 데이터 삽입 -->
+              </tbody>
+          </table>
+          <div id="pagination"></div>
+      </div>
+  </div>
+
+  {% include "footer.html" %}
+
+  <script>
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    const allData = {{ companies|tojson }};
+
+    function renderList(items) {
+        const tableBody = document.querySelector("#company-table tbody");
+        tableBody.innerHTML = "";
+        const start = (currentPage - 1) * itemsPerPage;
+        const pagedItems = items.slice(start, start + itemsPerPage);
+
+        pagedItems.forEach(company => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${company.기업명}</td>
+                <td>${company.사업자등록번호}</td>
+                <td>${company.업종명_상}</td>
+                <td>${company.대표자}</td>
+                <td>${company.지역명}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        renderPagination(items.length);
+    }
+
+    function renderPagination(totalItems){
+        const totalPages = Math.ceil(totalItems/itemsPerPage);
+        const container = document.getElementById("pagination");
+        container.innerHTML="";
+        if(totalPages <= 1) return;
+
+        const groupSize = 10;
+        let currentGroupStart = Math.floor((currentPage-1)/groupSize)*groupSize + 1;
+        let currentGroupEnd = Math.min(currentGroupStart + groupSize - 1, totalPages);
+
+        function createBtn(label, page, disabled=false){
+            const btn = document.createElement("button");
+            btn.textContent = label;
+            if(disabled) btn.classList.add("disabled");
+            if(!disabled){
+                btn.onclick = () => { currentPage = page; renderList(allData); };
+            }
+            if(page===currentPage) btn.classList.add("active");
+            return btn;
+        }
+
+        container.appendChild(createBtn("<<", 1, currentPage===1));
+        container.appendChild(createBtn("<", currentGroupStart-1, currentGroupStart===1));
+
+        for(let i=currentGroupStart; i<=currentGroupEnd; i++){
+            container.appendChild(createBtn(i, i));
+        }
+
+        container.appendChild(createBtn(">", currentGroupEnd+1, currentGroupEnd===totalPages));
+        container.appendChild(createBtn(">>", totalPages, currentPage===totalPages));
+    }
+
+    // 초기 렌더링
+    renderList(allData);
+  </script>
+</body>
+</html>

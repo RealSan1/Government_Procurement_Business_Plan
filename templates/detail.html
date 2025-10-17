@@ -89,19 +89,7 @@
   </style>
 </head>
 <body>
-  <header>
-    <nav>
-            <div>대학일자리플러스센터</div>
-            <ul>
-                <li><a href="#jobs">채용정보</a></li>
-                <li><a href="#consult">상담신청</a></li>
-                <li><a href="#events">교육행사</a></li>
-                <li><a href="#resources">자료실</a></li>
-                <li><a href="#login">로그인</a></li>
-            </ul>
-        </nav>
-  </header>
-
+  {% include "header.html" %}
   <div class="content">
     <div class="post-date">2025-09-16 03:48 AM KST</div>
     <div class="post-title">공지사항 - 2025년 9월 업데이트</div>
@@ -118,8 +106,6 @@
     <button class="back-button" onclick="window.location.href='resources.html'">목록으로 돌아가기</button>
   </div>
 
-  <footer>
-    <p>연락처: 123-456-7890 | © 2025 대학일자리플러스센터</p>
-  </footer>
+{% include "footer.html" %}
 </body>
 </html>

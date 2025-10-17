@@ -5,36 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>대학일자리플러스센터</title>
     <style>
-        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #FFFFFF; color: #333333; }
-        .slider { margin-top: 60px; height: 300px; background: #E0E0E0; text-align: center; padding-top: 120px; }
-        .cards { display: flex; justify-content: space-around; padding: 20px; }
-        .card { background: #F9F9F9; padding: 15px; border-radius: 5px; width: 30%; }
-        .card button { background: #003087; color: #FFFFFF; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
-        .card button:hover { background: #0055D4; }
+    body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #FFFFFF; color: #333333; }
+    /* 슬라이더 전체 */
+    .slider { position: relative; margin-top: 60px; height: 600px; overflow: hidden; z-index: 1; }
+    .slides { display: flex; transition: transform 0.8s ease-in-out; width: 100%; }
+    .slide { min-width: 100%; flex-shrink: 0; }
+    .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* 좌우 버튼 */
+    .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.4); color: white; border: none; padding: 10px 15px; cursor: pointer; font-size: 18px; border-radius: 50%; }
+    .prev { left: 15px; }
+    .next { right: 15px; }
+    /* 하단 점 */
+    .dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; cursor: pointer; }
+    .dot.active { background: #003087; }
+    
+    /* 카드 */
+    .cards { display: flex; justify-content: space-around; padding: 20px; }
+    .card { background: #F9F9F9; padding: 15px; border-radius: 5px; width: 30%; }
+    .card button { background: #003087; color: #FFFFFF; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+    .card button:hover { background: #0055D4; }
     </style>
 </head>
 <body>
     <header>
     </header>
     {% include "header.html" %}
-    <div class="slider">슬라이더: 최신 공지사항</div>
+  <div class="slider">
+    <div class="slides">
+      <div class="slide"><img src="{{ url_for('static', path='img1.jpg') }}" alt="이미지1"></div>
+      <div class="slide"><img src="{{ url_for('static', path='img2.jpg') }}" alt="이미지2"></div>
+      <div class="slide"><img src="{{ url_for('static', path='img3.jpg') }}" alt="이미지3"></div>
+    </div>
+
+    <button class="slider-btn prev">&#10094;</button>
+    <button class="slider-btn next">&#10095;</button>
+
+    <div class="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+  
     <div class="cards">
         <div class="card">
-            <h3>채용 1</h3>
-            <p>회사명: OO기업</p>
-            <button>자세히 보기</button>
+            <h3>한국전력기술주식회사</h3>
+            <p>2025년도 하반기 장애인 체험형 인턴 채용 공고</p>
+            <p>한국전력기술주식회사에서 정보통신을 모집합니다. <br> 지원 대상: 신입 <br> 지역: 경북 <br> 고용형태: 청년인턴(체험형)</p>
+            <p>지원 링크: <a href="https://kepcoenc.recruiter.co.kr" target="_blank">지원하기</a></p>
         </div>
         <div class="card">
-            <h3>채용 2</h3>
-            <p>회사명: XX기업</p>
-            <button>자세히 보기</button>
+            <h3>한국고용정보원</h3>
+            <p>2025년도 한국고용정보원 정규직 채용 공고</p>
+            <p>한국고용정보원에서 정보통신을 모집합니다. <br> 지원 대상: 신입 <br> 지역: 충북 <br> 고용형태: 정규직</p>
+            <p>지원 링크: <a href="https://www.keis.or.kr" target="_blank">지원하기</a></p>
         </div>
         <div class="card">
-            <h3>채용 3</h3>
-            <p>회사명: YY기업</p>
-            <button>자세히 보기</button>
+            <h3>자동차손해배상진흥원</h3>
+            <p>자동차손해배상진흥원 경력직(정규직) 제한경쟁 채용 전산·회계</p>
+            <p>자동차손해배상진흥원에서 정보통신을 모집합니다. <br> 지원 대상: 경력 <br> 지역: 서욱 <br> 고용형태: 정규직</p>
+            <p>지원 링크: <a href="https://recruit.incruit.com/tacss/job/2509010009" target="_blank">지원하기</a></p>
         </div>
     </div>
     {% include "footer.html" %}
 </body>
+
+  <script>
+    const slides = document.querySelector('.slides');
+    const slideItems = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const total = slideItems.length;
+    let index = 0;
+
+    function showSlide(i) {
+      index = (i + total) % total;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach(dot => dot.classList.remove('active'));
+      dots[index].classList.add('active');
+    }
+
+    document.querySelector('.next').onclick = () => showSlide(index + 1);
+    document.querySelector('.prev').onclick = () => showSlide(index - 1);
+    dots.forEach((dot, i) => dot.onclick = () => showSlide(i));
+
+    setInterval(() => showSlide(index + 1), 4000);
+  </script>
 </html>

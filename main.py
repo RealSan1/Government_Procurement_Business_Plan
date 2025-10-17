@@ -4,11 +4,15 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 from getQuery.jobOpening import fetch_jobs_ex, fetch_jobs_in, insert_job, update_job_status, fetch_pending_jobs
 from getQuery.consult import fetch_consults, update_consult_status, apply_consult, get_consultants, fetch_user_consults
+from getQuery.major import get_major_detail_full, search_majors
+from getQuery.company import companyInfo
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # CORS 허용
@@ -102,6 +106,25 @@ async def reject_job(job_id: int = Form(...)):
     update_job_status(job_id, "거절")
     return JSONResponse({"success": True, "job_id": job_id})
 
+# 학과 검색 페이지 + 검색 결과
+@app.get("/major/search", response_class=HTMLResponse)
+def major_search(request: Request, q: str = ""):
+    results = search_majors(q) if q else []
+    return templates.TemplateResponse("major/search.html", {
+        "request": request,
+        "results": results,
+        "query": q
+    })
+
+# 학과 상세 페이지
+@app.get("/major/{id}")
+def major_detail(id: int):
+    data = get_major_detail_full(id)
+    if not data:
+        return JSONResponse(content={"error": "학과 정보가 없습니다."}, status_code=404)
+    return data
+
+
 
 @app.get("/consult", response_class=HTMLResponse)
 def consult_page(request: Request, user_id: str = None):
@@ -161,6 +184,10 @@ def admin_update_status(consult_id: int, action: str):
 def resources_page(request: Request):
     return templates.TemplateResponse("resources.html", {"request": request})
 
+@app.get("/company", response_class=HTMLResponse)
+def company_page(request: Request):
+    companies = companyInfo()
+    return templates.TemplateResponse("company.html", {"request": request, "companies": companies})
 
 if __name__ == "__main__":
     host = os.environ.get("HOST", "127.0.0.1")

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ info.학과명 }} | 대학일자리플러스센터</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
+    <a href="/major/search" class="text-blue-500 text-sm mb-4 inline-block">← 학과 검색으로 돌아가기</a>
+
+    <h1 class="text-3xl font-bold mb-4">{{ info.학과명 }}</h1>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">학과 소개</h2>
+      <p class="text-gray-700">{{ info.학과소개 or "등록된 소개가 없습니다." }}</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">적성 및 흥미</h2>
+      <p class="text-gray-700">{{ info.적성흥미 or "등록된 정보가 없습니다." }}</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">주요 교과목</h2>
+      <ul class="list-disc list-inside text-gray-700">
+        {% for s in subjects %}
+          <li>{{ s.교과목 }}</li>
+        {% else %}
+          <li>등록된 교과목이 없습니다.</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">관련 학과</h2>
+      <div class="flex flex-wrap gap-2">
+        {% for rel in related_majors %}
+          <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">{{ rel.관련학과명 }}</span>
+        {% else %}
+          <p class="text-gray-600">관련 학과 정보가 없습니다.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-semibold mb-2">관련 직업</h2>
+      <div class="flex flex-wrap gap-2">
+        {% for job in related_jobs %}
+          <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">{{ job.관련직업명 }}</span>
+        {% else %}
+          <p class="text-gray-600">관련 직업 정보가 없습니다.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</body>
+</html>
