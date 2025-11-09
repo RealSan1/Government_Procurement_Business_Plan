@@ -184,6 +184,10 @@ def admin_update_status(consult_id: int, action: str):
 def resources_page(request: Request):
     return templates.TemplateResponse("resources.html", {"request": request})
 
+@app.get("/intro", response_class=HTMLResponse)
+def intro(request: Request):
+    return templates.TemplateResponse("intro.html", {"request": request})
+
 @app.get("/company", response_class=HTMLResponse)
 def company_page(request: Request):
     companies = companyInfo()

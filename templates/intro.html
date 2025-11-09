@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대학일자리플러스센터 소개</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #fff; color: #333; padding-top: 60px; }
+        .intro-container { max-width: 900px; margin: 2rem auto; padding: 1.5rem; background: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
+        /* 제목 */
+        .intro-title { font-size: 2.2rem; font-weight: 700; color: #003087; text-align: center; margin-bottom: 1.5rem; }
+
+        /* 섹션 */
+        .intro-section { margin-bottom: 2.5rem; }
+        .intro-section h2 { font-size: 1.6rem; color: #003087; margin-bottom: 1rem; border-left: 5px solid #003087; padding-left: 12px; }
+        .intro-section p { font-size: 1.1rem; line-height: 1.8; color: #444; margin-bottom: 1rem; }
+
+        /* 이미지 자리 (임시 placeholder) */
+        .image-placeholder { width: 100%; height: 280px; background: #f0f0f0; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #888; font-size: 1.1rem; margin: 1.5rem 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>');
+            background-repeat: no-repeat; background-position: center; background-size: 60px; }
+        .image-placeholder::after { content: "이미지 삽입 위치 (너비 100%, 높이 280px)"; }
+
+        /* 미션 & 비전 박스 */
+        .mission-vision { display: flex; gap: 1.5rem; margin: 2rem 0; }
+
+        .mv-box { flex: 1; padding: 1.5rem; background: #F9F9F9; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .mv-box h3 { font-size: 1.4rem; color: #003087; margin-bottom: 0.8rem; display: flex; align-items: center; }
+        .mv-box h3::before { content: ""; display: inline-block; width: 8px; height: 8px; background: #003087; border-radius: 50%; margin-right: 8px; }
+
+        /* 연혁 타임라인 (간단한 예시) */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ""; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: #003087; }
+        .timeline-item { position: relative; margin-bottom: 1.5rem; padding-left: 20px; }
+        .timeline-item::before { content: ""; position: absolute; left: -18px; top: 6px; width: 12px; height: 12px; background: #fff; border: 3px solid #003087; border-radius: 50%; }
+        .timeline-item strong { color: #003087;}
+    </style>
+</head>
+<body>
+
+{% include "header.html" %}
+
+<div class="intro-container">
+    <h1 class="intro-title">대학일자리플러스센터 소개</h1>
+
+    <!-- 메인 소개 문구 -->
+    <div class="intro-section">
+        <p>
+            <strong>대학일자리플러스센터</strong>는 학생들의 성공적인 취업과 진로 설계를 돕기 위해 설립된 종합 취업지원 플랫폼입니다.  
+            채용정보 제공부터 1:1 상담, 교육행사, 취업역량 강화 프로그램까지, 학생 여러분의 커리어 여정을 전방위적으로 지원합니다.
+        </p>
+    </div>
+
+    <!-- 이미지 자리 1 -->
+    <img src="https://www.inhatc.ac.kr/sites/kr/images/history/history_2017_01.jpg" alt="센터 스태프 사진" style="width:100%; height:280px; object-fit:cover; border-radius:8px; margin:1.5rem 0;">
+
+    <!-- 미션 & 비전 -->
+    <div class="mission-vision">
+        <div class="mv-box">
+            <h3>미션</h3>
+            <p>학생 개개인의 잠재력을 발굴하고, 실질적인 취업 성공으로 연결시키는 최고의 파트너가 됩니다.</p>
+        </div>
+        <div class="mv-box">
+            <h3>비전</h3>
+            <p>모든 학생이 원하는 진로를 설계하고, 자신감 있게 사회에 첫발을 내딛는 그날까지.</p>
+        </div>
+    </div>
+
+    <!-- 주요 기능 소개 -->
+    <div class="intro-section">
+        <h2>주요 서비스</h2>
+        <ul style="line-height: 1.8; padding-left: 20px;">
+            <li><strong>채용정보</strong>: 교내·외부 기업의 실시간 채용 공고 제공</li>
+            <li><strong>상담신청</strong>: 전문 상담사와 1:1 진로·취업 상담</li>
+            <li><strong>교육행사</strong>: 취업특강, 모의면접, 역량강화 워크숍</li>
+            <li><strong>자료실</strong>: 자소서 샘플, 면접 가이드, 취업 보고서 등</li>
+        </ul>
+    </div>
+
+    <!-- 이미지 자리 2 -->
+        <img src="https://www.inhatc.ac.kr/sites/kr/images/history/key9_photo_2012_2.jpg" alt="센터 스태프 사진" style="width:100%; height:280px; object-fit:cover; border-radius:8px; margin:1.5rem 0;">
+
+    <!-- 연혁 -->
+    <div class="intro-section">
+        <h2>주요 연혁</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <p><strong>2020년</strong> - 대학일자리플러스센터 개소</p>
+            </div>
+            <div class="timeline-item">
+                <p><strong>2021년</strong> - 취업률 85% 달성, 교육부 우수센터 선정</p>
+            </div>
+            <div class="timeline-item">
+                <p><strong>2023년</strong> - 온라인 플랫폼 오픈, 외부 기업 채용 연계 200건 이상</p>
+            </div>
+            <div class="timeline-item">
+                <p><strong>2025년</strong> - AI 기반 진로 추천 시스템 도입 예정</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 이미지 자리 3 -->
+    <img src="{{ url_for('static', path='location.png') }}" alt="센터 스태프 사진" style="width:100%; height:280px; object-fit:cover; border-radius:8px; margin:1.5rem 0;">
+    <!-- 오시는 길 (간단히) -->
+    <div class="intro-section">
+        <h2>오시는 길</h2>
+        <p>
+            위치: 학생회관 3층 301호<br>
+            전화: 02-1234-5678<br>
+            운영시간: 월~금 09:00 ~ 18:00 (점심 12:00 ~ 13:00)
+        </p>
+    </div>
+</div>
+
+{% include "footer.html" %}
+
+</body>
+</html>
