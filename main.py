@@ -1,7 +1,7 @@
 import uvicorn
 import os
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, Request, HTTPException, Form
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +10,7 @@ from getQuery.jobOpening import fetch_jobs_ex, fetch_jobs_in, insert_job, update
 from getQuery.consult import fetch_consults, update_consult_status, apply_consult, get_consultants, fetch_user_consults
 from getQuery.major import get_major_detail_full, search_majors
 from getQuery.company import companyInfo
+from getQuery.resources import resources_list_data, get_resource_detail, create_resource
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -181,8 +182,33 @@ def admin_update_status(consult_id: int, action: str):
 
 
 @app.get("/resources", response_class=HTMLResponse)
-def resources_page(request: Request):
-    return templates.TemplateResponse("resources.html", {"request": request})
+async def resources_list(request: Request):
+    posts = resources_list_data()
+    return templates.TemplateResponse("resources/resources.html", {"request": request, "posts": posts})
+
+@app.get("/resources/detail/{post_id}", response_class=HTMLResponse)
+async def resources_detail(request: Request, post_id: str):
+    post = get_resource_detail(post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="게시글이 없습니다")
+    return templates.TemplateResponse(
+        "resources/detail.html",
+        {"request": request, "post": post}
+    )
+
+@app.get("/resources/write", response_class=HTMLResponse)
+async def resources_write(request: Request):
+    return templates.TemplateResponse("resources/write.html", {"request": request})
+
+@app.post("/resources/write")
+async def resources_write_submit(
+    제목: str = Form(...),
+    내용: str = Form(None),
+    카테고리: str = Form("기타"),
+    공지여부: bool = Form(False)
+):
+    create_resource(제목, 내용, 카테고리, 공지여부)
+    return RedirectResponse("/resources", status_code=303)
 
 @app.get("/intro", response_class=HTMLResponse)
 def intro(request: Request):

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자료 상세보기 - 대학일자리플러스센터</title>
+    <style>
+        body {  font-family: 'Roboto', sans-serif;  margin: 0;  padding: 0;  background: #FFFFFF;  color: #333333;  padding-top: 60px;  }
+        .container { max-width: 900px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
+        .detail-header { border-bottom: 2px solid #003087; padding-bottom: 1rem; margin-bottom: 2rem; }
+        .detail-title { font-size: 2rem; font-weight: 700; color: #003087; margin: 0 0 0.5rem 0; }
+        .detail-meta { color: #666; font-size: 1rem; }
+        .detail-meta span { margin-right: 1.5rem; }
+        .detail-content { line-height: 1.9; font-size: 1.1rem; color: #444; margin-bottom: 2rem; min-height: 200px; }
+        .notice-badge { background: #d4380d; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-left: 10px; }
+
+        .button-group { text-align: center; margin-top: 3rem; }
+        .btn { padding: 12px 30px; font-size: 1.1rem; border: none; border-radius: 5px; cursor: pointer; margin: 0 10px; text-decoration: none; display: inline-block; }
+        .btn-list { background: #666; color: white }
+        .btn-list:hover { background: #444; }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+
+    <div class="container">
+        <div class="detail-header">
+            <h1 class="detail-title">
+                {{ post.제목 }}
+                {% if post.공지여부 %}
+                    <span class="notice-badge">공지</span>
+                {% endif %}
+            </h1>
+            <div class="detail-meta">
+                <span>카테고리: {{ post.카테고리 }}</span>
+                <span>등록일: {{ post.작성일시.strftime("%Y년 %m월 %d일") }}</span>
+            </div>
+        </div>
+
+        <div class="detail-content">
+            {% if post.내용 %}
+                {{ post.내용 | replace("\n", "<br>") | safe }}
+            {% else %}
+                <p style="color:#999; font-style:italic;">
+                    등록된 내용이 없습니다.<br>
+                    관리자에게 문의하거나 첨부파일을 확인해주세요.
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- 나중에 파일 업로드 기능 추가하면 여기 표시 -->
+        <!--
+        <div class="file-download">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <a href="/static/files/sample.pdf" download>자료명.pdf (3.2MB)</a>
+        </div>
+        -->
+
+        <div class="button-group">
+            <a href="/resources" class="btn btn-list">목록으로 돌아가기</a>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+</body>
+</html>

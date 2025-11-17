@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자료실 - 대학일자리플러스센터</title>
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #FFFFFF; color: #333333; padding-top: 60px; }
+        .search-container { max-width: 900px; margin: 2rem auto 1rem; padding: 10px; text-align: center; background: #F9F9F9; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .search-container input { padding: 8px; font-size: 1.2rem; width: 70%; max-width: 700px; border: 1px solid #E0E0E0; border-radius: 5px; }
+        .search-container button { padding: 8px 15px; font-size: 1.2rem; background: #003087; color: #FFFFFF; border: none; border-radius: 5px; cursor: pointer; }
+        .search-container button:hover { background: #0055D4; }
+        .content { max-width: 900px; margin: 0 auto 2rem; padding: 1rem; }
+
+        .write-button-container { text-align: right; margin-bottom: 1rem; }
+        .write-button { padding: 10px 20px; font-size: 1.1rem; background: #003087; color: #fff; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .write-button:hover { background: #0055D4; }
+
+        .board-list { background: #FFFFFF; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .board-list table { width: 100%; border-collapse: collapse; }
+        .board-list th { background: #F9F9F9; padding: 1rem; text-align: center; border-bottom: 2px solid #E0E0E0; font-size: 1.2rem; }
+        .board-list td { padding: 1rem; text-align: center; border-bottom: 1px solid #E0E0E0; cursor: pointer; transition: background-color 0.2s ease; }
+        .board-list tbody tr:hover { background-color: #f5f8ff; }
+        .notice-row { background-color: #FFF3E0 !important; font-weight: 600; }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="검색어 입력..." aria-label="자료 검색">
+        <button id="search-btn">검색</button>
+    </div>
+
+    <div class="content">
+        <div class="write-button-container">
+            <a href="/resources/write" class="write-button">글 작성하기</a>
+        </div>
+
+        <div class="board-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>등록일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if posts %}
+                        {% for post in posts %}
+                        <tr {% if post.공지여부 %}class="notice-row"{% endif %}>
+                            <td>
+                                {% if post.공지여부 %}
+                                    <span style="color:#d4380d;">공지</span>
+                                {% else %}
+                                    {{ loop.index + (page-1)*20 if page else loop.index }}
+                                {% endif %}
+                            </td>
+                            <td style="text-align:left; padding-left:20px;">
+                                <a href="/resources/detail/{{ post.번호 }}" style="text-decoration:none; color:inherit;">
+                                    {{ post.제목 }}
+                                    {% if post.공지여부 %}<span style="color:#d4380d; font-weight:bold;"> [공지]</span>{% endif %}
+                                </a>
+                            </td>
+                            <td>{{ post.작성일시.strftime("%Y-%m-%d") }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" style="padding:3rem; color:#999;">등록된 자료가 없습니다.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <script>
+        // 검색 기능 (현재는 클라이언트에서만 알림 → 나중에 백엔드로 구현 가능)
+        document.getElementById('search-btn').addEventListener('click', function() {
+            const query = document.getElementById('search-input').value.trim();
+            if (query) {
+                alert(`'${query}'로 검색되었습니다! (서버 연동은 추후 구현)`);
+            }
+        });
+
+        // 엔터키로도 검색
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('search-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
