@@ -3,7 +3,7 @@ import pymysql
 from pymysql.cursors import DictCursor
 from dotenv import load_dotenv
 
-# 개발 환경에서만 .env 파일 로드
+# 개발 환경에서만 .env
 if os.path.exists("apikey.env"):
     load_dotenv("apikey.env")
 
