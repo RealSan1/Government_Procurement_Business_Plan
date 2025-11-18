@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ "3.10", "3.11" ]
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v3
@@ -26,6 +27,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pytest-cov
         pip install -r requirements.txt
+
+    - name: CI diagnostic: Python & packages
+      run: |
+        python -V
+        python -c "import sys; print(sys.executable)"
+        pip --version
+        pip list --format=columns
 
     - name: Lint with flake8 (optional)
       run: |
