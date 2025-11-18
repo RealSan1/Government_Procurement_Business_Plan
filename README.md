@@ -69,3 +69,49 @@
 - 수시보고서: 필요 시.
 - 완료보고서: 개발완료보고서 (기획서, 시스템 구조, DB ERD, 메뉴/화면 구성도 등), 관리자/사용자 매뉴얼, 프로그램 소스 파일 (PSD 등).
 
+---
+
+## 테스트 및 배포
+
+### 테스트 전략
+
+프로젝트는 3단계 테스트를 구현합니다:
+
+1. **단위 테스트** (`tests/test_unit.py`): `getQuery` 함수 로직 검증 (DB 모킹)
+2. **통합 테스트** (`tests/test_integration.py`): FastAPI 엔드포인트 흐름 검증
+3. **E2E 테스트** (`tests/test_e2e_selenium.py`): Selenium으로 사용자 시나리오 자동화
+
+테스트 실행 및 설정 상세는 [TESTING.md](./TESTING.md)를 참고하세요.
+
+### 로컬 환경 실행
+
+```bash
+# 1. 가상환경 생성 및 활성화
+python -m venv .venv
+.venv\Scripts\Activate.ps1  # Windows PowerShell
+# source .venv/bin/activate  # Linux/macOS
+
+# 2. 의존성 설치
+pip install -r requirements.txt
+
+# 3. 서버 실행
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+
+# 4. 테스트 실행 (다른 터미널)
+pytest tests/test_unit.py -v
+pytest tests/test_integration.py -v
+pytest tests/test_e2e_selenium.py -v  # FastAPI 서버가 실행 중이어야 함
+```
+
+### GitHub Actions CI/CD
+
+- `.github/workflows/tests.yml`: Push/PR 시 단위 및 통합 테스트 자동 실행
+- `.github/workflows/e2e.yml`: 메인 브랜치 변경 시 E2E 테스트 자동 실행 (Chrome + Selenium)
+
+---
+
+## 설계 및 문서
+
+- [DESIGN.md](./DESIGN.md): 전체 아키텍처, DB 스키마, API 설계, 배포 가이드
+- [TESTING.md](./TESTING.md): 테스트 전략, 실행 방법, 작성 가이드
+

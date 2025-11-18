@@ -1,1 +1,27 @@
 apikey.env
+
+# Test & Coverage
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+htmlcov/
+coverage.xml
+*.cover
+tests/_last_run/
+*.db
+.coverage
+e2e-report.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.venv
+env/
+venv/
