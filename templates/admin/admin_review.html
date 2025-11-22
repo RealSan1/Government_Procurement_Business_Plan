@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 검수 대시보드 - 대학일자리플러스센터</title>
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; padding-top: 60px; }
+
+        .admin-container { max-width: 1000px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+        .admin-title { font-size: 2.2rem; color: #003087; text-align: center; margin-bottom: 2.5rem; font-weight: 700; }
+
+        .section { margin-bottom: 3rem; }
+        .section h2 { font-size: 1.6rem; color: #003087; border-bottom: 3px solid #003087; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+
+        .card-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 1.5rem; }
+        .review-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 8px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s; }
+        .review-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .card-title { font-size: 1.35rem; font-weight: 600; color: #003087; }
+        .card-type { background: #003087; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
+        .card-meta { font-size: 0.95rem; color: #666; margin-bottom: 1rem; }
+        .card-content { line-height: 1.7; color: #444; margin-bottom: 1.2rem; }
+        .card-actions { text-align: right; }
+
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; margin-left: 8px; transition: background 0.2s;}
+        .btn-approve { background: #27ae60; color: white; }
+        .btn-approve:hover { background: #219a52; }
+        .btn-reject { background: #c0392b; color: white; }
+        .btn-reject:hover { background: #a93226; }
+
+        .status-pending { color: #e67e22; font-weight: bold; }
+        .status-approved { color: #27ae60; font-weight: bold; }
+        .status-rejected { color: #c0392b; font-weight: bold; }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+
+    <div class="admin-container">
+        <h1 class="admin-title">검수 대시보드</h1>
+
+        <!-- 채용공고 검수 섹션 -->
+        <div class="section">
+            <h2>채용공고 검수 대기 ({{ pending_jobs|length }})</h2>
+            <div class="card-grid">
+                {% for job in pending_jobs %}
+                <div class="review-card" data-type="job" data-id="{{ job.공고id }}">
+                    <div class="card-header">
+                        <div class="card-title">[{{ job.회사명 }}] {{ job.제목 }}</div>
+                        <span class="card-type">채용공고</span>
+                    </div>
+                    <div class="card-meta">
+                        <span>기관: {{ job.회사명 }}</span> | 
+                        <span>직무: {{ job.표준직무 }}</span> | 
+                        <span>등록일: {{ job.등록일시.strftime("%m-%d %H:%M") }}</span>
+                    </div>
+                    <div class="card-content">
+                        고용형태: {{ job.고용형태 }} | 근무지: {{ job.근무지 }} | 채용인원: {{ job.채용인원 }}<br>
+                        원문: <a href="{{ job.회사url }}" target="_blank">{{ job.회사url }}</a>
+                    </div>
+                    <div class="card-actions">
+                        <span class="status-pending">검수대기</span>
+                        <button class="btn btn-approve" 
+                                onclick="reviewItem('job', {{ job.공고id }}, 'approve')">승인</button>
+                        <button class="btn btn-reject" 
+                                onclick="reviewItem('job', {{ job.공고id }}, 'reject')">반려</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 상담신청 검수 섹션 -->
+<div class="section">
+    <h2>상담신청 검수 대기 ({{ pending_consults|length }})</h2>
+    <div class="card-grid">
+        {% for consult in pending_consults %}
+        <div class="review-card" data-type="consult" data-id="{{ consult.상담신청id }}">
+            <div class="card-header">
+                <div class="card-title"> 학번: {{ consult.학번 }}</div>
+                <span class="card-type">상담신청</span>
+            </div>
+            <div class="card-meta">
+                <span>유형: {{ consult.상담유형 }}</span><br>
+                <span>신청일: {{ consult.신청일시.strftime("%m-%d %H:%M") }}</span>
+            </div>
+            <div class="card-content">
+                문의 내용: {{ consult.메모|default("없음") }}
+            </div>
+            <div class="card-actions">
+                <span class="status-pending">검수대기</span>
+                <button class="btn btn-approve" 
+                        onclick="reviewItem('consult', {{ consult.상담신청id }}, 'approve')">승인</button>
+                <button class="btn btn-reject" 
+                        onclick="reviewItem('consult', {{ consult.상담신청id }}, 'reject')">반려</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+<script>
+    async function reviewItem(type, id, action) {
+        const actionText = action === 'approve' ? '승인' : '반려';
+        if (!confirm(`${actionText}하시겠습니까?`)) return;
+
+        let url;
+        if (type === 'job') {
+            url = action === 'approve' ? '/jobs/approve' : '/jobs/reject';
+            const formData = new FormData();
+            formData.append('job_id', id);
+            var options = { method: 'POST', body: formData };
+        } else if (type === 'consult') {
+            url = `/admin/consults/${id}/${action}`;
+            var options = { method: 'POST' };
+        }
+
+        try {
+            const res = await fetch(url, options);
+            const data = await res.json();
+
+            if (data.success) {
+                const card = document.querySelector(`[data-type="${type}"][data-id="${id}"]`);
+                const statusEl = card.querySelector('.status');
+                statusEl.textContent = action === 'approve' ? '승인됨' : '반려됨';
+                statusEl.className = action === 'approve' ? 'status-approved' : 'status-rejected';
+                card.querySelectorAll('button').forEach(b => b.disabled = true);
+                alert(data.message);
+            } else {
+                alert(data.error || '처리 실패');
+            }
+        } catch (err) {
+            alert('서버와 연결이 되지 않습니다');
+            console.error(err);
+        }
+    }
+</script>
+</body>
+</html>

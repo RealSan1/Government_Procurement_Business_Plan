@@ -62,7 +62,7 @@ def assign_consult(상담id, 상담사id, 상담일시=None):
             cur.execute("""
                 UPDATE 상담신청
                 SET 상태='승인', 상담사id=%s, 상담일시=%s
-                WHERE 상담id=%s
+                WHERE 상담신청id=%s
             """, (상담사id, 상담일시, 상담id))
         conn.commit()
     finally:
@@ -75,8 +75,9 @@ def fetch_consults() -> List[Dict]:
     try:
         with conn.cursor() as cur:
             sql = """
-                SELECT 상담id, 학번, 상태, 상담유형, 메모, 신청일시
+                SELECT 상담신청id, 학번, 상태, 상담유형, 메모, 신청일시
                 FROM 상담신청
+                WHERE 상태 = '신청'
             """
             cur.execute(sql)
             return cur.fetchall()
@@ -88,10 +89,14 @@ def update_consult_status(consult_id: int, status: str):
     """상담 상태 변경"""
     conn = get_conn()
     try:
+        if status == 'success':
+            num = '승인'
+        else:
+            num = '거절'
         with conn.cursor() as cur:
             cur.execute(
-                'UPDATE 상담신청 SET 상태=%s WHERE 상담id=%s',
-                (status, consult_id)
+                'UPDATE 상담신청 SET 상태=%s WHERE 상담신청id=%s',
+                (num, consult_id)
             )
             conn.commit()
     finally:
@@ -104,7 +109,7 @@ def assign_consultant(consult_id: int, consultant_id: int):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                'UPDATE 상담신청 SET 상담사id=%s WHERE 상담id=%s',
+                'UPDATE 상담신청 SET 상담사id=%s WHERE 상담신청id=%s',
                 (consultant_id, consult_id)
             )
             conn.commit()

@@ -44,7 +44,6 @@ def jobs_page_in(request: Request):
     # 관리자 버튼 표시 여부
     show_button = request.cookies.get("admin_cookie") == "show"
     
-    # DB에서 공고 가져오기
     jobs = fetch_jobs_in()
     
     return templates.TemplateResponse("jobs/internal.html", {
@@ -126,8 +125,7 @@ def major_detail(id: int):
     return data
 
 
-
-@app.get("/consult", response_class=HTMLResponse)
+@app.get("/consult/consult", response_class=HTMLResponse)
 def consult_page(request: Request, user_id: str = None):
     """
     user_id가 없으면 상담사 목록만 보여주고,
@@ -136,7 +134,7 @@ def consult_page(request: Request, user_id: str = None):
     consultants = get_consultants()  # 상담사 목록
     user_consults = fetch_user_consults(user_id) if user_id else []
 
-    return templates.TemplateResponse("consult.html", {
+    return templates.TemplateResponse("consult/consult.html", {
         "request": request,
         "consultants": consultants,
         "user_consults": user_consults
@@ -162,23 +160,13 @@ def user_consults(user_id: str):
     return fetch_user_consults(user_id)
 
     
-@app.get("/admin/consult", response_class=HTMLResponse)
-def admin_consults_page(request: Request):
-    try:
-        consults = fetch_consults()
-        return templates.TemplateResponse("admin_consults.html", {"request": request, "consults": consults})
-    except Exception as e:
-        return HTMLResponse(f"오류 발생: {str(e)}", status_code=500)
-
-
-@app.post("/admin/consults/{consult_id}/{action}")
-def admin_update_status(consult_id: int, action: str):
-    try:
-        new_status = "승인" if action == "approve" else "거절"
-        update_consult_status(consult_id, new_status)
-        return JSONResponse({"message": f"{new_status} 완료"})
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+# @app.get("/admin/consult", response_class=HTMLResponse)
+# def admin_consults_page(request: Request):
+#     try:
+#         consults = fetch_consults()
+#         return templates.TemplateResponse("admin_consults.html", {"request": request, "consults": consults})
+#     except Exception as e:
+#         return HTMLResponse(f"오류 발생: {str(e)}", status_code=500)
 
 
 @app.get("/resources", response_class=HTMLResponse)
@@ -212,13 +200,35 @@ async def resources_write_submit(
 
 @app.get("/intro", response_class=HTMLResponse)
 def intro(request: Request):
-    return templates.TemplateResponse("intro.html", {"request": request})
+    return templates.TemplateResponse("intro/intro.html", {"request": request})
 
 @app.get("/company", response_class=HTMLResponse)
 def company_page(request: Request):
     companies = companyInfo()
-    return templates.TemplateResponse("company.html", {"request": request, "companies": companies})
+    return templates.TemplateResponse("company/company.html", {"request": request, "companies": companies})
 
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_review_dashboard(request: Request):
+    try:
+        pending_jobs = fetch_pending_jobs()
+        pending_consults = fetch_consults()
+        return templates.TemplateResponse("admin/admin_review.html", {
+            "request": request,
+            "pending_jobs": pending_jobs,
+            "pending_consults": pending_consults
+        })
+    except Exception as e:
+        return HTMLResponse(f"<h1>오류 발생</h1><p>{str(e)}</p>", status_code=500)
+
+@app.post("/admin/consults/{consult_id}/{action}")
+def admin_update_status(consult_id: int, action: str):
+    try:
+        new_status = "success" if action == "approve" else "reject"
+        update_consult_status(consult_id, new_status)
+        return JSONResponse({"message": f"{new_status}"})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    
 if __name__ == "__main__":
     host = os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", 8000)) 
